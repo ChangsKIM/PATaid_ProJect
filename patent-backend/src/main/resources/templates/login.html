@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Custom Login Page</title>
+</head>
+<body>
+<h1>로그인 페이지</h1>
+<!-- 
+    스프링 시큐리티가 formLogin()으로 설정된 경우, 
+    POST /login 으로 아이디(username), 비밀번호(password)를 전송하면 인증 처리.
+    아래 form action="/login" method="post"가 중요.
+-->
+<form th:action="@{/login}" method="post">
+    <div>
+        <label for="username">아이디: </label>
+        <input type="text" id="username" name="username" />
+    </div>
+    <div>
+        <label for="password">비밀번호: </label>
+        <input type="password" id="password" name="password" />
+    </div>
+    <button type="submit">로그인</button>
+</form>
+</body>
+</html>
