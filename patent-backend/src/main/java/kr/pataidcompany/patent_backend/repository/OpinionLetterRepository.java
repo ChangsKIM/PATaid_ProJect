@@ -7,3 +7,9 @@ public interface OpinionLetterRepository extends JpaRepository<OpinionLetter, Lo
     // 필요 시 userId로 검색
     // List<OpinionLetter> findByUserId(Long userId);
 }
+
+public interface OpinionLetterRepository extends JpaRepository<OpinionLetter, Long> {
+    List<OpinionLetter> findByUserId(Long userId);
+
+    void deleteByCreatedAtBefore(LocalDateTime cutoff);
+}

@@ -7,3 +7,9 @@ public interface PriorArtSearchReportRepository extends JpaRepository<PriorArtSe
     // 필요 시 userId로 검색
     // List<PriorArtSearchReport> findByUserId(Long userId);
 }
+
+public interface PriorArtSearchReportRepository extends JpaRepository<PriorArtSearchReport, Long> {
+    List<PriorArtSearchReport> findByUserId(Long userId);
+
+    void deleteByCreatedAtBefore(LocalDateTime cutoff);
+}
