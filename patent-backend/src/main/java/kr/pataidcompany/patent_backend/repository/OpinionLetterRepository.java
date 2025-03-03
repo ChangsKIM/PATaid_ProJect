@@ -3,13 +3,12 @@ package kr.pataidcompany.patent_backend.repository;
 import kr.pataidcompany.patent_backend.model.OpinionLetter;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface OpinionLetterRepository extends JpaRepository<OpinionLetter, Long> {
-    // 필요 시 userId로 검색
-    // List<OpinionLetter> findByUserId(Long userId);
-}
+import java.time.LocalDateTime;
+import java.util.List;
 
 public interface OpinionLetterRepository extends JpaRepository<OpinionLetter, Long> {
     List<OpinionLetter> findByUserId(Long userId);
 
+    // 15일 자동 삭제용
     void deleteByCreatedAtBefore(LocalDateTime cutoff);
 }

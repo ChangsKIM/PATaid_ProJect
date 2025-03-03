@@ -17,7 +17,7 @@ public class BoardService {
         return boardRepo.save(post);
     }
 
-    // 상세조회 + 조회수 증가
+    // 조회수 증가 포함 조회
     public Board getPostAndIncreaseViews(Long id) {
         Board post = boardRepo.findById(id).orElse(null);
         if (post != null) {
@@ -25,6 +25,11 @@ public class BoardService {
             boardRepo.save(post);
         }
         return post;
+    }
+
+    // **추가**: 단순 조회 (조회수 증가 없음)
+    public Board getPost(Long id) {
+        return boardRepo.findById(id).orElse(null);
     }
 
     // 수정

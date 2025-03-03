@@ -49,6 +49,16 @@ public class Comment {
         this.writerId = writerId;
     }
 
+    // ★ 추가
+    public Long getParentId() {
+        return parentId;
+    }
+
+    // ★ 추가
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
     public String getContent() {
         return content;
     }

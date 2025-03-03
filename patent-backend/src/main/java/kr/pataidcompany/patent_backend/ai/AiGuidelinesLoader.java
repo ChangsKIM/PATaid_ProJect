@@ -1,13 +1,14 @@
 package kr.pataidcompany.patent_backend.ai;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+// import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
-@Configuration
+@Component
 public class AiGuidelinesLoader {
 
     @Autowired
