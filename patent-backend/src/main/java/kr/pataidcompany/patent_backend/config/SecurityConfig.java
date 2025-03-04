@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -21,18 +23,25 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    @Autowired
+    public SecurityConfig(
+            CustomUserDetailsService userDetailsService,
+            JwtTokenProvider jwtTokenProvider,
+            JwtAuthenticationFilter jwtAuthenticationFilter
+    ) {
         this.userDetailsService = userDetailsService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-    // 비밀번호 인코더
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // DaoAuthenticationProvider
     @Bean
     public DaoAuthenticationProvider authProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -41,7 +50,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    // AuthenticationManager (REST API 로그인에서 사용)
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -49,24 +57,30 @@ public class SecurityConfig {
                 .build();
     }
 
-    // SecurityFilterChain
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // CSRF, CORS 설정
         http.csrf(csrf -> csrf.disable())
-                .cors(withDefaults());
+            .cors(withDefaults());
 
         // 인증/인가
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login").permitAll() // 로그인
-                .requestMatchers("/api/register/**").permitAll() // 회원가입
-                .requestMatchers("/admin/**").hasRole("ADMIN") // 관리자 전용
-                .anyRequest().authenticated());
+            .requestMatchers("/api/login").permitAll()            // 로그인
+            .requestMatchers("/api/register/**").permitAll()       // 회원가입
+            .requestMatchers("/api/validate-token").permitAll()    // (추가) 토큰 검증 엔드포인트 허용
+            .requestMatchers("/admin/**").hasRole("ADMIN")         // 관리자 전용
+            .anyRequest().authenticated()
+        );
 
-        // formLogin, logout 등: REST API이므로 disable 가능
-        // (만약 Thymeleaf 로그인 폼 사용 시 formLogin() 가능)
-        // http.formLogin(form -> form.disable());
-        // http.logout(logout -> logout.disable());
+        // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞에)
+        http.addFilterBefore(
+                jwtAuthenticationFilter,
+                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
+        );
+
+        // formLogin, logout 비활성 (REST API라면 필요 없음)
+        // http.formLogin(Customizer.withDefaults());
+        // http.logout(Customizer.withDefaults());
 
         return http.build();
     }

@@ -1,4 +1,3 @@
-// src/pages/RegisterPage.jsx
 import React, { useState } from 'react';
 import {
   registerIndividual,
@@ -7,8 +6,6 @@ import {
   checkNickname,
 } from '../services/api';
 import { useNavigate } from 'react-router-dom';
-
-import '../assets/css/RegisterPage.css';
 
 function RegisterPage() {
   // step: 1 = 회원가입 타입 선택 페이지, 2 = 회원가입 입력 페이지
@@ -36,15 +33,44 @@ function RegisterPage() {
   const [usernameCheckMsg, setUsernameCheckMsg] = useState('');
   const [nicknameCheckMsg, setNicknameCheckMsg] = useState('');
 
+  // --------------------------------------------
+  // (중요) 비밀번호 일치 상태: null | true | false
+  // --------------------------------------------
+  // null: 아직 비교하지 않음 (혹은 confirmPassword가 비어 있음)
+  // true: 비밀번호와 재입력이 일치
+  // false: 비밀번호와 재입력이 불일치
+  const [passwordMatch, setPasswordMatch] = useState(null);
+
   // 회원가입 완료 후 메인 페이지(HomePage.jsx)로 이동
   const navigate = useNavigate();
 
   // 입력값 변경 핸들러
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // 비밀번호/비밀번호 재입력 로직
+    if (name === 'password') {
+      // 만약 이미 confirmPassword가 입력되어 있다면, 즉시 비교
+      if (form.confirmPassword) {
+        setPasswordMatch(value === form.confirmPassword);
+      } else {
+        // confirmPassword가 아직 비어있다면 메시지 표시 X
+        setPasswordMatch(null);
+      }
+    } else if (name === 'confirmPassword') {
+      if (value) {
+        // confirmPassword에 값이 들어오면, password와 비교
+        setPasswordMatch(value === form.password);
+      } else {
+        // confirmPassword가 비었다면 메시지 표시 X
+        setPasswordMatch(null);
+      }
+    }
   };
 
   // 아이디 중복확인
@@ -87,20 +113,21 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // (공통) 비밀번호 유효성 검사: 6~16자, 숫자/특수문자 최소 1개씩
+    // (1) 비밀번호/비밀번호 확인 최종 확인
+    // passwordMatch가 false이거나 null이면 회원가입 불가
+    if (passwordMatch !== true) {
+      alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+      return;
+    }
+
+    // (2) 비밀번호 유효성 검사: 6~16자, 숫자/특수문자 최소 1개씩
     const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,16})/;
     if (!passwordRegex.test(form.password)) {
       alert('비밀번호는 6~16자이며, 숫자와 특수문자를 최소 1개 이상 포함해야 합니다.');
       return;
     }
 
-    // 비밀번호 재확인
-    if (form.password !== form.confirmPassword) {
-      alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
-      return;
-    }
-
-    // 이메일 유효성 검사(간단 예시)
+    // (3) 이메일 유효성 검사(간단 예시)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
       alert('유효한 이메일 주소를 입력해주세요.');
@@ -111,7 +138,6 @@ function RegisterPage() {
       let result;
       if (memberType === 'normal') {
         // 일반 회원가입
-        // 기존 registerIndividual API를 사용
         result = await registerIndividual({
           username: form.username,
           nickname: form.nickname,
@@ -129,15 +155,13 @@ function RegisterPage() {
           email: form.email,
         });
       } else {
-        // 구글/카카오의 경우 별도 로직이 필요
-        // 여기서는 간단히 예시 메시지 처리
+        // 구글/카카오 회원가입 (OAuth)
         alert(`${memberType} 회원가입은 별도의 OAuth 과정을 통해 진행됩니다.`);
         return;
       }
 
       console.log('가입 성공:', result);
       alert('가입 성공!');
-      // 가입 후 메인 페이지로 이동 (HomePage.jsx가 /home에 매핑되어 있다고 가정)
       navigate('/');
     } catch (err) {
       console.error('가입 실패:', err);
@@ -218,7 +242,9 @@ function RegisterPage() {
         <div>
           <h2>구글 회원가입</h2>
           <p>구글 OAuth로 진행합니다.</p>
-          <button onClick={() => alert('구글 OAuth 로직 연동 필요')}>구글 회원가입 진행</button>
+          <button onClick={() => alert('구글 OAuth 로직 연동 필요')}>
+            구글 회원가입 진행
+          </button>
         </div>
       );
     }
@@ -227,7 +253,9 @@ function RegisterPage() {
         <div>
           <h2>카카오 회원가입</h2>
           <p>카카오 OAuth로 진행합니다.</p>
-          <button onClick={() => alert('카카오 OAuth 로직 연동 필요')}>카카오 회원가입 진행</button>
+          <button onClick={() => alert('카카오 OAuth 로직 연동 필요')}>
+            카카오 회원가입 진행
+          </button>
         </div>
       );
     }
@@ -331,6 +359,26 @@ function RegisterPage() {
               value={form.confirmPassword}
               onChange={handleChange}
             />
+            {/* 
+              confirmPassword가 비어있지 않은 경우에만 메시지 표시
+              passwordMatch === null이면 아직 비교 전
+              passwordMatch === true면 '비밀번호가 일치합니다.'
+              passwordMatch === false면 '비밀번호가 일치하지 않습니다.'
+            */}
+            {form.confirmPassword && (
+              <>
+                {passwordMatch === true && (
+                  <div style={{ color: 'green' }}>
+                    비밀번호가 일치합니다.
+                  </div>
+                )}
+                {passwordMatch === false && (
+                  <div style={{ color: 'red' }}>
+                    비밀번호가 일치하지 않습니다.
+                  </div>
+                )}
+              </>
+            )}
           </div>
 
           <div>
@@ -353,14 +401,14 @@ function RegisterPage() {
     <div className="register-page">
       {step === 1 && renderRegisterType()}
       {step === 2 && renderRegisterForm()}
-  
+
       {step === 2 && (
         <button type="button" onClick={() => setStep(1)}>
           이전
         </button>
       )}
     </div>
-  );  
+  );
 }
 
 export default RegisterPage;

@@ -1,0 +1,46 @@
+/* src/css/Header.css */
+
+/* 전체 헤더 영역 */
+.site-header {
+    position: relative;    /* 오른쪽 배치 위해 사용 */
+    display: flex;
+    justify-content: center; /* nav를 수평 중앙에 */
+    align-items: center;
+    background: #eee;
+    padding: 16px;
+  }
+  
+  /* 중앙 메뉴 */
+  .header-nav {
+    font-size: 20px; /* 글씨 크기 크게 */
+  }
+  
+  /* 메뉴 링크들 사이 간격 */
+  .header-nav a {
+    margin: 0 8px; /* 좌우 여백 8px */
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .header-nav a:hover {
+    text-decoration: underline;
+  }
+  
+  /* 오른쪽 사용자 영역 */
+  .header-user {
+    position: absolute; /* 부모(.site-header)를 기준으로 절대 배치 */
+    right: 16px;        /* 오른쪽 여백 */
+    font-size: 18px;    /* 글씨 크기 (조정 가능) */
+  }
+  
+  /* 사용자 영역 링크 간격 */
+  .header-user a {
+    margin: 0 8px;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .header-user a:hover {
+    text-decoration: underline;
+  }
+  

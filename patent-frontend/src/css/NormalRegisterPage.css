@@ -1,0 +1,104 @@
+/* src/css/NormalRegisterPage.css */
+
+/* 메인 컨테이너 */
+.normal-register-container {
+    width: 400px;
+    margin: 50px auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+  }
+  
+  .normal-register-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* 폼 스타일 */
+  .register-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .register-form label {
+    display: inline-block;
+    width: 140px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  /* 버튼들 */
+  .btn-check {
+    margin-left: 8px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-check:hover {
+    background-color: #eaeaea;
+  }
+  
+  .btn-submit {
+    margin-top: 20px;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* 파란색 */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-submit:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-back {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background-color: #ccc;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-back:hover {
+    background-color: #b3b3b3;
+  }
+  
+  /* 입력창 그룹 */
+  .input-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .input-group input {
+    width: 200px;
+    padding: 5px;
+  }
+  
+  /* 메시지 */
+  .match-msg {
+    margin-top: 5px;
+  }
+  
+  .match-true {
+    color: green;
+  }
+  
+  .match-false {
+    color: red;
+  }
+  
+  .msg-username,
+  .msg-nickname {
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
