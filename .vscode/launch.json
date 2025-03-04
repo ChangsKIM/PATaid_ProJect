@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PatentBackendApplication<patent-backend>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "kr.pataidcompany.patent_backend.PatentBackendApplication",
+            "projectName": "patent-backend",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
