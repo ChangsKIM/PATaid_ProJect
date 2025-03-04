@@ -1,0 +1,11 @@
+.layout-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* 전체 화면 높이 */
+  }
+  
+  .layout-main {
+    flex: 1 0 auto;    /* 화면 높이를 늘리기 위한 flex */
+    padding: 16px;     /* 여백 */
+  }
+  

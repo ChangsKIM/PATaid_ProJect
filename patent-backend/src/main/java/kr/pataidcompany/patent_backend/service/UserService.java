@@ -43,11 +43,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // 필요 시 관리자 생성 로직 등 추가 가능
-    // public User registerAdmin(User user) {
-    // user.setMemberType("admin");
-    // user.setRole("ROLE_ADMIN");
-    // user.setPassword(passwordEncoder.encode(user.getPassword()));
-    // return userRepository.save(user);
-    // }
+    // =========================
+    // 아이디 중복확인 로직
+    // =========================
+    public boolean isUsernameAvailable(String username) {
+        // existsByUsername() = 해당 아이디가 이미 존재하면 true 반환
+        // -> "사용 가능 여부"는 반대이므로 ! (NOT) 처리
+        return !userRepository.existsByUsername(username);
+    }
+
+    // =========================
+    // 닉네임 중복확인 로직 (필요 시 사용)
+    // =========================
+    public boolean isNicknameAvailable(String nickname) {
+        return !userRepository.existsByNickname(nickname);
+    }
 }

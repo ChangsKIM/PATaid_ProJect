@@ -1,57 +1,65 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../services/api';
+import { login as loginAPI } from '../services/api'; 
+import { useAuth } from '../hooks/AuthContext';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import '../css/LoginPage.css';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { isAuthenticated, login } = useAuth();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     try {
-      // login() 호출 -> { success, message, token } 반환
-      const data = await login(username, password);
+      const data = await loginAPI(username, password);
+      console.log('login response:', data); // 디버깅용
+      // data: { success, message, token, nickname }
 
-      if (data.token) {
-        // 예: localStorage에 토큰 저장
-        localStorage.setItem('token', data.token);
-
+      if (data.success) {
+        login(data.token, data.nickname);
         alert('로그인 성공: ' + data.message);
-        navigate('/'); // 로그인 후 메인 페이지 등으로 이동
+        navigate('/');
       } else {
-        alert('로그인 실패: 토큰 없음');
+        alert('로그인 실패: ' + data.message);
       }
     } catch (err) {
-      alert('로그인 실패: ' + err.message);
+      alert('로그인 오류: ' + err.message);
     }
-  };
+  }
 
   return (
-    <div>
-      <h2>로그인</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>아이디(username): </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>비밀번호(password): </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">로그인</button>
-      </form>
-    </div>
+    <>
+      <Header />
+      <div className="login-container">
+        <h2>로그인 페이지</h2>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label>아이디: </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>비밀번호: </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="btn-login">로그인</button>
+        </form>
+        {isAuthenticated && <p>이미 로그인 상태입니다.</p>}
+      </div>
+      <Footer />
+    </>
   );
 }
 

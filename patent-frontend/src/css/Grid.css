@@ -1,0 +1,8 @@
+.my-grid {
+    /* 필요 시 그리드 전체에 적용할 스타일 */
+    background-color: #fafafa;
+    padding: 8px;
+  }
+  
+  /* 예: 그리드 아이템이 있다면 .my-grid > .MuiGrid-item { ... } 로 추가 가능 */
+  

@@ -1,42 +1,48 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/AuthContext';
+import { validateTokenAPI } from '../../services/api';
+import '../../css/Header.css';
 
 function Header() {
-  const { isAuthenticated, logout } = useAuth(); // 로그인 여부 + logout 함수
+  const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
-  // 로그아웃 버튼 클릭 시 실행될 함수
-  const handleLogout = (e) => {
-    e.preventDefault(); // a 태그 기본 동작 방지
-    logout();           // useAuth 훅에서 제공되는 logout 로직 (예: 토큰 삭제 등)
-    navigate('/');      // 메인 페이지로 이동
+  useEffect(() => {
+    if (isAuthenticated) {
+      validateTokenAPI()
+        .then((res) => {
+          // res.valid 가 false면 로그아웃
+          if (!res.valid) {
+            logout();
+          }
+        })
+        // 서버 에러 등 발생 시에도 로그아웃
+        .catch(() => logout());
+    }
+  }, [isAuthenticated, logout]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
-    <header style={{
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center',
-      background: '#eee',
-      padding: '8px'
-    }}>
-      {/* 좌측 메뉴 */}
-      <nav>
+    <header className="site-header">
+      <nav className="header-nav">
         <Link to="/">메인</Link> |{' '}
-        <Link to="/prior-art">선행 기술조사 보고서 작성</Link> |{' '}
+        <Link to="/prior-art">선행 기술조사</Link> |{' '}
         <Link to="/patent">특허 명세서 작성</Link> |{' '}
         <Link to="/opinion">특허 의견서 작성</Link> |{' '}
         <Link to="/board">게시판</Link>
       </nav>
 
-      {/* 우측 로그인/마이페이지 */}
-      <div>
+      <div className="header-user">
         {isAuthenticated ? (
           <>
+            <span>{user?.nickname || '사용자'} 님</span> |{' '}
             <Link to="/mypage">마이페이지</Link> |{' '}
-            {/* 기존: <Link to="/logout">로그아웃</Link> -> 수정 */}
-            <a href="#" onClick={handleLogout}>로그아웃</a>
+            <button onClick={handleLogout}>로그아웃</button>
           </>
         ) : (
           <>

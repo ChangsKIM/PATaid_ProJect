@@ -1,0 +1,69 @@
+/* src/css/HomePage.css */
+
+/* 메인 컨테이너 (본문 영역) */
+.home-container {
+    max-width: 900px; /* 최대 폭 900px */
+    margin: 0 auto;   /* 좌우 중앙 정렬 */
+    padding: 16px;    /* 상하좌우 여백 */
+  }
+  
+  .home-container h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center; 
+  }
+  
+  /* 2×2 그리드 레이아웃 */
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 16px;
+  }
+  
+  /* 카드 스타일 */
+  .home-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    background-color: #fff;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .home-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .home-card h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+  }
+  
+  .home-card p {
+    margin-bottom: 12px;
+    color: #555;
+  }
+  
+  /* 링크 스타일 */
+  .home-card a {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 10px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+  }
+  
+  .home-card a:hover {
+    background-color: #0056b3;
+  }
+  
+  /* 반응형 예시 (선택) */
+  @media (max-width: 600px) {
+    .home-grid {
+      grid-template-columns: 1fr; 
+    }
+  }
+  
