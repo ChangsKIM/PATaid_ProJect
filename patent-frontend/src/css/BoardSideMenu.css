@@ -1,0 +1,37 @@
+/* src/css/BoardSideMenu.css */
+
+.board-side-menu {
+    width: 200px;             /* 사이드메뉴 폭 */
+    border-right: 1px solid #ccc;
+    background-color: #f9f9f9;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .board-side-menu h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .board-side-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .board-side-menu li {
+    margin-bottom: 8px;
+  }
+  
+  .board-side-menu a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.2s;
+  }
+  
+  .board-side-menu a:hover {
+    color: #007bff; /* 마우스 오버 시 파란색 */
+    text-decoration: underline;
+  }
+  

@@ -27,30 +27,35 @@ public class BoardController {
 
     /**
      * 목록 (페이징)
-     * 카테고리별 열람 권한
      */
-    @PreAuthorize("@boardAuth.canView(#category, authentication)")
+    @PreAuthorize("@boardAuth.canView(#category.toUpperCase(), authentication)")
     @GetMapping("/{category}")
     public ResponseEntity<?> listByCategory(
             @PathVariable String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+
+        // category 대문자화
         Page<Board> result = boardService.listByCategory(category.toUpperCase(), page, size);
         return ResponseEntity.ok(result);
     }
 
     /**
      * 상세보기 (조회수 중복 방지: 쿠키 방식)
-     * - @boardAuth.canView(...)로 열람 권한 체크
+     * - category 대소문자 불일치 방지
      */
-    @PreAuthorize("@boardAuth.canView(#category, authentication)")
+    @PreAuthorize("@boardAuth.canView(#cat.toUpperCase(), authentication)")
     @GetMapping("/{category}/{id}")
     public ResponseEntity<?> getPost(
-            @PathVariable String category,
+            @PathVariable("category") String cat,
             @PathVariable Long id,
             @CookieValue(name = "viewed_boards", required = false) String viewedCookie,
             HttpServletResponse response) {
-        // 1) 쿠키 파싱 (예: "1,5,12")
+
+        // category를 대문자로 통일
+        String category = cat.toUpperCase();
+
+        // 조회수 중복 방지용 쿠키 파싱
         Set<String> viewedSet = new HashSet<>();
         if (viewedCookie != null && !viewedCookie.isEmpty()) {
             viewedSet.addAll(Arrays.asList(viewedCookie.split(",")));
@@ -61,58 +66,65 @@ public class BoardController {
         if (!alreadyViewed) {
             // 조회수 증가
             post = boardService.getPostAndIncreaseViews(id);
-            // 쿠키에 추가
             viewedSet.add(String.valueOf(id));
         } else {
-            // 그냥 가져오기
+            // 조회수 증가 없이 그냥 가져오기
             post = boardService.getPost(id);
         }
 
         if (post == null) {
+            // 게시글이 없으면 404
             return ResponseEntity.notFound().build();
         }
 
-        // 2) 쿠키 갱신
-        String newCookieVal = String.join(",", viewedSet);
-        Cookie cookie = new Cookie("viewed_boards", newCookieVal);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24); // 1일
-        response.addCookie(cookie);
+        // 새로 본 글이라면 쿠키 갱신
+        if (!alreadyViewed) {
+            String newCookieVal = String.join(",", viewedSet);
+            Cookie cookie = new Cookie("viewed_boards", newCookieVal);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 24); // 1일
+            response.addCookie(cookie);
+        }
 
+        // JSON 형태로 post 반환
         return ResponseEntity.ok(post);
     }
 
     /**
      * 작성
      */
-    @PreAuthorize("@boardAuth.canCreate(#category, authentication)")
+    @PreAuthorize("@boardAuth.canCreate(#category.toUpperCase(), authentication)")
     @PostMapping("/{category}")
     public ResponseEntity<?> createPost(
             @PathVariable String category,
             @RequestBody Board board,
             Authentication auth) {
+
         String username = auth.getName();
         User currentUser = userRepo.findByUsername(username).orElse(null);
         if (currentUser == null) {
             return ResponseEntity.badRequest().body("Invalid user session.");
         }
 
+        // category 대문자화
         board.setCategory(category.toUpperCase());
         board.setWriterId(currentUser.getUserId());
         Board saved = boardService.createPost(board);
+
+        // 글 작성 후, DB에 저장된 Board 엔티티를 JSON으로 반환
         return ResponseEntity.ok(saved);
     }
 
     /**
      * 수정
-     * 본인 or 관리자
      */
-    @PreAuthorize("@boardAuth.canEditOrDelete(#category, #id, authentication)")
+    @PreAuthorize("@boardAuth.canEditOrDelete(#category.toUpperCase(), #id, authentication)")
     @PutMapping("/{category}/{id}")
     public ResponseEntity<?> updatePost(
             @PathVariable String category,
             @PathVariable Long id,
             @RequestBody Board updated) {
+
         Board result = boardService.updatePost(id, updated);
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -122,9 +134,8 @@ public class BoardController {
 
     /**
      * 삭제
-     * 본인 or 관리자
      */
-    @PreAuthorize("@boardAuth.canEditOrDelete(#category, #id, authentication)")
+    @PreAuthorize("@boardAuth.canEditOrDelete(#category.toUpperCase(), #id, authentication)")
     @DeleteMapping("/{category}/{id}")
     public ResponseEntity<?> deletePost(
             @PathVariable String category,
@@ -137,15 +148,14 @@ public class BoardController {
     }
 
     /**
-     * 검색 (제목/내용) - 비로그인 열람?
-     * 시나리오에 따라 권한 결정
+     * 검색 (제목/내용)
      */
     @GetMapping("/search")
     public ResponseEntity<?> searchPosts(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        // 만약 검색도 권한 필요하면 @PreAuthorize 붙이거나 if문
+        // 권한 필요 시 @PreAuthorize
         Page<Board> result = boardService.searchPosts(keyword, page, size);
         return ResponseEntity.ok(result);
     }

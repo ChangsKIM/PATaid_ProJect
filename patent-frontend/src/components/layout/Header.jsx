@@ -1,3 +1,4 @@
+// src/components/layout/Header.jsx
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/AuthContext';
@@ -9,19 +10,23 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 로그인된 상태라면, 토큰 유효성 검증
     if (isAuthenticated) {
       validateTokenAPI()
         .then((res) => {
-          // res.valid 가 false면 로그아웃
+          // res.valid가 false면, 토큰이 만료되었거나 유효하지 않음 → 로그아웃
           if (!res.valid) {
             logout();
           }
         })
-        // 서버 에러 등 발생 시에도 로그아웃
-        .catch(() => logout());
+        .catch(() => {
+          // 서버 에러 등 발생 시에도 안전하게 로그아웃 처리
+          logout();
+        });
     }
   }, [isAuthenticated, logout]);
 
+  // 로그아웃 후 메인("/")으로 이동
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -40,6 +45,7 @@ function Header() {
       <div className="header-user">
         {isAuthenticated ? (
           <>
+            {/* user가 존재하면 닉네임, 없으면 "사용자"로 표시 */}
             <span>{user?.nickname || '사용자'} 님</span> |{' '}
             <Link to="/mypage">마이페이지</Link> |{' '}
             <button onClick={handleLogout}>로그아웃</button>

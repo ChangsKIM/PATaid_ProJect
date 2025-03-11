@@ -1,0 +1,75 @@
+/* src/css/BoardList.css */
+
+/* 메인 컨테이너: 가운데 정렬, 회색 톤 */
+.board-list-container {
+    width: 80%;
+    margin: 0 auto; /* 수평 중앙정렬 */
+    text-align: center; /* 테이블 등 텍스트 가운데 정렬 */
+    font-family: sans-serif;
+    /* background-color: #f7f7f7; 연한 그레이 배경 */
+    padding: 20px;
+    /* border: 1px solid #ccc; */
+  }
+  
+  /* 상단 제목 스타일 */
+  .board-list-container h2 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* 테이블 공통 스타일 */
+  .board-list-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  /* pinnedPosts 전용 스타일 (선택사항)
+  .board-list-table.pinned-table {
+    background-color: #ffecec; 
+  }
+  */
+  
+  .board-list-table th,
+  .board-list-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+  
+  .board-list-table th {
+    background-color: #ddd;
+  }
+  
+  .board-list-table a {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .board-list-table a:hover {
+    text-decoration: underline;
+  }
+  
+  /* 페이징 버튼 영역 */
+  .board-list-pagination {
+    margin-top: 15px;
+  }
+  
+  /* 글쓰기 버튼을 오른쪽 하단에 정렬하기 위해 
+     footer 영역을 별도 박스로 분리 */
+  .board-list-footer {
+    margin-top: 20px;
+    text-align: right; /* 오른쪽 정렬 */
+  }
+  
+  /* 글쓰기 버튼 */
+  .write-btn {
+    padding: 8px 16px;
+    background-color: #666;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .write-btn:hover {
+    background-color: #888;
+  }
+  

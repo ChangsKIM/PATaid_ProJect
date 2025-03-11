@@ -1,3 +1,4 @@
+// src/App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -8,6 +9,7 @@ import RegisterTypePage from './pages/RegisterTypePage';
 import NormalRegisterPage from './pages/NormalRegisterPage';
 import CorporateRegisterPage from './pages/CorporateRegisterPage';
 
+import BoardRoutes from './pages/board/BoardRoutes'; // 게시판 라우트
 import { AuthProvider } from './hooks/AuthContext';
 
 function App() {
@@ -21,6 +23,9 @@ function App() {
           <Route path="/register/normal" element={<NormalRegisterPage />} />
           <Route path="/register/corporate" element={<CorporateRegisterPage />} />
           <Route path="/mypage" element={<MyPage />} />
+
+          {/* 게시판 전용 라우트 */}
+          <Route path="/board/*" element={<BoardRoutes />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

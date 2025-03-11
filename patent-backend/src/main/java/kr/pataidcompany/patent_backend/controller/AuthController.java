@@ -19,45 +19,55 @@ public class AuthController {
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    private UserRepository userRepository; // (추가) DB에서 사용자 조회
+    private UserRepository userRepository;
 
+    /**
+     * 로그인 API
+     * POST /api/login
+     * RequestBody: { "username": "...", "password": "..." }
+     * Response: { "success": true/false, "message": "...", "token": "...", "nickname": "...", "role": "...", "userId": ... }
+     */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         try {
-            // 1) 사용자명/비밀번호로 인증 객체 생성
             UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(
                     request.getUsername(),
                     request.getPassword()
                 );
 
-            // 2) 인증 시도
+            // 인증 시도
             Authentication authentication = authManager.authenticate(authToken);
 
-            // 3) 인증 성공 시 JWT 토큰 생성
+            // 인증 성공 시 JWT 발급
             String token = jwtTokenProvider.generateToken(authentication);
 
-            // 4) DB에서 User 엔티티 조회 → 닉네임 포함
+            // DB에서 User 엔티티 조회 -> userId, role, nickname 가져옴
             User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // 5) LoginResponse에 nickname도 담아 반환
-            return new LoginResponse(true, "로그인 성공", token, user.getNickname());
+            // userId까지 함께 응답
+            return new LoginResponse(
+                true,
+                "로그인 성공",
+                token,
+                user.getNickname(),
+                user.getRole(),
+                user.getUserId()
+            );
 
         } catch (BadCredentialsException e) {
-            return new LoginResponse(false, "로그인 실패(자격증명 오류)", null, null);
+            return new LoginResponse(false, "로그인 실패(자격증명 오류)", null, null, null, null);
         } catch (Exception e) {
-            return new LoginResponse(false, "로그인 실패: " + e.getMessage(), null, null);
+            return new LoginResponse(false, "로그인 실패: " + e.getMessage(), null, null, null, null);
         }
     }
 
-    // ====== DTO classes ======
+    // ==== DTO classes ====
 
-    // 로그인 요청 DTO
     public static class LoginRequest {
         private String username;
         private String password;
-
         // getters/setters
         public String getUsername() { return username; }
         public void setUsername(String username) { this.username = username; }
@@ -66,25 +76,27 @@ public class AuthController {
         public void setPassword(String password) { this.password = password; }
     }
 
-    // 로그인 응답 DTO
     public static class LoginResponse {
         private boolean success;
         private String message;
         private String token;
-
-        // (추가) 닉네임 필드
         private String nickname;
+        private String role;
+        private Long userId; // ★ 추가
 
         public LoginResponse() {}
 
-        public LoginResponse(boolean success, String message, String token, String nickname) {
+        public LoginResponse(boolean success, String message,
+                             String token, String nickname,
+                             String role, Long userId) {
             this.success = success;
             this.message = message;
             this.token = token;
             this.nickname = nickname;
+            this.role = role;
+            this.userId = userId;
         }
 
-        // getters/setters
         public boolean isSuccess() { return success; }
         public void setSuccess(boolean success) { this.success = success; }
 
@@ -96,5 +108,11 @@ public class AuthController {
 
         public String getNickname() { return nickname; }
         public void setNickname(String nickname) { this.nickname = nickname; }
+
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
+
+        public Long getUserId() { return userId; }
+        public void setUserId(Long userId) { this.userId = userId; }
     }
 }

@@ -1,0 +1,26 @@
+/* src/css/BoardLayout.css */
+.board-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .board-container {
+    flex: 1;
+    display: flex;
+  }
+  
+  /* 왼쪽 사이드메뉴 */
+  .board-container .board-side-menu {
+    width: 200px;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  /* 오른쪽 게시판 내용 */
+  .board-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+  }
+  

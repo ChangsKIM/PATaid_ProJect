@@ -1,0 +1,19 @@
+/* src/pages/notice/NoticeBoardDetail.css */
+
+.notice-board-detail {
+    padding: 20px;
+  }
+  
+  .notice-field {
+    margin-bottom: 8px;
+  }
+  
+  .notice-content {
+    min-height: 100px;
+    white-space: pre-wrap;
+  }
+  
+  .notice-buttons {
+    margin-top: 10px;
+  }
+  
